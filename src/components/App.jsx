@@ -21,35 +21,46 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.getInitialCard().then((data) => {
+   if (!isLoggedIn) {
+      return;
+    }
+  api.getInitialCard().then((data) => {
       setCards(data);
     });
-  }, []);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const jwt = localStorage.getItem("jwt");
 
-    if (!jwt) {
-      setCheckIsLoggedIn(false);
-      return;
-    }
-    auth
-      .checkToken(jwt)
-      .then(({ data }) => {
-        setCheckIsLoggedIn(false);
+    const checkToken = jwt ? auth.checkToken(jwt) : Promise.reject(null);
+
+    checkToken
+      .then((result) => {
+        if (!result) {
+          setCheckIsLoggedIn(false);
+          return;
+        }
+        const { email } = result.data;
         setIsLoggedIn(true);
-        setCurrentUser((prevUser) => ({ ...prevUser, email: data.email }));
+        setCurrentUser((prevUser) => ({ ...prevUser, email: email }));
         navigate("/");
       })
-      .catch((err) => {
+
+      .catch(() => {
         localStorage.removeItem("jwt");
-        setCheckIsLoggedIn(false);
+
         setIsLoggedIn(false);
         navigate("signin");
+      })
+      .finally(() => {
+        setCheckIsLoggedIn(false);
       });
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
     api.getUserInfo().then((data) => {
       setCurrentUser((prevUser) => ({
         ...prevUser,
@@ -59,7 +70,7 @@ function App() {
         name: data.name,
       }));
     });
-  }, []);
+  }, [isLoggedIn]);
   async function handleCardLike(card) {
     const isLiked = card.isLiked;
 
@@ -107,20 +118,27 @@ function App() {
 
   const handleUpdateUser = (data) => {
     return api.updateUserInfo(data).then((newData) => {
-      setCurrentUser(newData);
+      setCurrentUser((prevUser) => ({
+        ...prevUser,
+        name: newData.name,
+        about: newData.about,
+      }));
       handleClosePopup();
     });
   };
 
   const handleUpdateAvatar = (avatar) => {
     return api.setUserAvatar(avatar.avatar).then((newData) => {
-      setCurrentUser(newData);
+      setCurrentUser((prevUser) => ({
+        ...prevUser,
+        avatar: newData.avatar,
+      }));
       handleClosePopup();
     });
   };
 
   const handleAddPlaceSubmit = (cardData) => {
-   return api.addCard(cardData).then((newCard) => {
+    return api.addCard(cardData).then((newCard) => {
       setCards([newCard, ...cards]);
       handleClosePopup();
     });

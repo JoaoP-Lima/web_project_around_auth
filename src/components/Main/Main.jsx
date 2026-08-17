@@ -1,15 +1,15 @@
-import Avatar from "../../images/avatar.jpg";
-import { useState, useEffect, useContext } from "react";
+
+import { useContext } from "react";
 import Popup from "./components/Popup/Popup";
 import NewCard from "./components/Popup/components/NewCard/NewCard";
 import EditProfile from "./components/Popup/components/EditProfile/EditProfile";
 import EditAvatar from "./components/Popup/components/EditAvatar/EditAvatar";
-import { api } from "../../utils/api";
+
 import CurrentUserContext from "../../contexts/CurrentUserContext";
-import InfoTooltip from "../InfoTooltip";
+
 
 import Card from "./components/Card/Card";
-import { use } from "react";
+
 function Main(props) {
   const { currentUser } = useContext(CurrentUserContext);
 

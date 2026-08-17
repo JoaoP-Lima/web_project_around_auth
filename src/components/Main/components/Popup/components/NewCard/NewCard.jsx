@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 
 export default function NewCard(props) {
   const [name, setName] = useState({});

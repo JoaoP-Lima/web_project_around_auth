@@ -4,8 +4,8 @@ import CurrentUserContext from "../../../../../../contexts/CurrentUserContext";
 export default function EditAvatar() {
   const userContext = useContext(CurrentUserContext);
   const avatarRef = useRef();
-  const { currentUser, handleUpdateAvatar } = userContext;
-  const [avatar, setAvatar] = useState(currentUser.avatar);
+  const { handleUpdateAvatar } = userContext;
+  
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isValid, setIsValid] = useState(false);
@@ -25,7 +25,7 @@ export default function EditAvatar() {
       setIsValid(false);
 
     }
-    setAvatar(event.target.value);
+    
   };
 
    const handleSubmit = (event) => {
